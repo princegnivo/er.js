@@ -1,88 +1,44 @@
 window.r = function() {
     if (window._rOn) {
-        if (window._rOverlay) window._rOverlay.remove();
-        if (window._rSrc) window._rSrc.style.opacity = '';
+        if (window._rPanel) window._rPanel.remove();
         window._rOn = false;
         return 'Retard OFF';
     }
 
-    var canvas = [].slice.call(document.querySelectorAll('canvas')).filter(function(x){return x.width > 300 && x.height > 200;}).sort(function(a,b){return (b.width*b.height)-(a.width*a.height);})[0];
-    if (!canvas) return 'Graphique introuvable.';
-
-    // On crée l'overlay (l'écran de retard)
-    var ov = document.createElement('canvas');
-    ov.width = canvas.width; ov.height = canvas.height;
-    ov.style.cssText = 'position:fixed;pointer-events:none;z-index:2147483647;background:#000;';
-    var rect = canvas.getBoundingClientRect();
-    ov.style.left = rect.left + 'px'; ov.style.top = rect.top + 'px';
-    ov.style.width = rect.width + 'px'; ov.style.height = rect.height + 'px';
-    document.body.appendChild(ov);
-    
-    window._rOverlay = ov;
-    window._rSrc = canvas;
+    // On crée un petit panneau d'affichage
+    var panel = document.createElement('div');
+    panel.style.cssText = 'position:fixed; top:10px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#00ff00; padding:10px; border-radius:5px; z-index:999999; font-family:monospace; font-size:16px; pointer-events:none; text-align:center; border:1px solid #00ff00;';
+    panel.innerHTML = '⏳ En attente des données WebSocket...';
+    document.body.appendChild(panel);
+    window._rPanel = panel;
     window._rOn = true;
-    window._rBuf = [];
-    window._rFrameRequested = false;
 
-    // On cache le vrai graphique
-    canvas.style.opacity = '0';
-    var octx = ov.getContext('2d');
-
-    // LA TECHNIQUE DU BYPASS : On intercepte la fonction de dessin de Pocket Option
-    // On va s'accrocher à la fonction requestAnimationFrame (utilisée par tous les graphiques)
-    var originalRAF = window.requestAnimationFrame;
-    
-    window.requestAnimationFrame = function(callback) {
-        return originalRAF.call(window, function(timestamp) {
-            // On laisse Pocket Option dessiner
-            callback(timestamp);
-            
-            // JUSTE APRÈS son dessin, on capture (avant que Safari efface)
-            if (window._rOn) {
-                try {
-                    var frame = document.createElement('canvas');
-                    frame.width = canvas.width; frame.height = canvas.height;
-                    var fctx = frame.getContext('2d');
+    // On intercepte la création de WebSockets
+    var OriginalWebSocket = window.WebSocket;
+    window.WebSocket = function(url, protocols) {
+        var ws = new OriginalWebSocket(url, protocols);
+        
+        ws.addEventListener('message', function(event) {
+            if (!window._rOn) return;
+            try {
+                // On cherche les données de prix dans les messages (format JSON)
+                var data = JSON.parse(event.data.substring(event.data.indexOf('[')));
+                if (Array.isArray(data) && data[0] === 'updateStream') {
+                    var asset = data[1].asset;
+                    var price = data[1].data ? data[1].data[3] : null; // Le prix est souvent à l'index 3
                     
-                    // Le drawImage fonctionne ICI car on est dans le même cycle de rendu
-                    fctx.drawImage(canvas, 0, 0);
-                    
-                    window._rBuf.push({ t: Date.now(), frame: frame });
-                    while(window._rBuf.length && Date.now() - window._rBuf[0].t > 6500) {
-                        window._rBuf.shift();
+                    if (price) {
+                        // On affiche le prix en direct (on pourrait ajouter un délai ici plus tard)
+                        panel.innerHTML = '📡 ASSET: ' + asset + '<br>PRIX: <span style="font-size:24px; color:#fff;">' + price + '</span>';
                     }
-                } catch(e) {}
-            }
+                }
+            } catch(e) {}
         });
+        return ws;
     };
 
-    // La boucle d'affichage du retard
-    window._rTimer = setInterval(function() {
-        if (!window._rOn) return;
-        
-        var delayed = null;
-        for (var i = 0; i < window._rBuf.length; i++) {
-            if (Date.now() - window._rBuf[i].t >= 6000) delayed = window._rBuf[i].frame;
-        }
+    // On remplace aussi les méthodes de création pour les anciens navigateurs
+    window.WebSocket.prototype = OriginalWebSocket.prototype;
 
-        octx.clearRect(0, 0, ov.width, ov.height);
-        if (delayed) {
-            octx.drawImage(delayed, 0, 0, ov.width, ov.height);
-        } else if (window._rBuf.length > 0) {
-            octx.drawImage(window._rBuf[0].frame, 0, 0, ov.width, ov.height);
-        }
-    }, 100);
-
-    return 'Retard ON (Bypass RAF)';
-};
-
-// Fonction pour nettoyer proprement quand on coupe le retard
-var originalStop = window.r;
-window.r = function() {
-    if (window._rOn) {
-        window.requestAnimationFrame = window._rOriginalRAF || window.requestAnimationFrame; // restore
-    } else {
-        window._rOriginalRAF = window.requestAnimationFrame;
-    }
-    return originalStop.apply(this, arguments);
+    return 'Retard ON (Mode WebSocket)';
 };
