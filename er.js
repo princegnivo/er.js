@@ -57,59 +57,47 @@ var Q=[['https://cdn.jsdelivr.net/npm/eruda-monitor@1','erudaMonitor'],['https:/
 function nxt(){var q=Q.shift();if(!q)return;L(q[0],function(){try{if(window[q[1]])eruda.add(window[q[1]]);}catch(x){}nxt();});}
 nxt();
 
-/* ===== MODE RETARD r() ===== */
+/* ===== MODE RETARD r() - VERSION POCKET OPTION ===== */
 window._rDelay=6000;
-window._rStep=100;            // 100ms = plus fluide
-window._rScale=0;             // 0 = résolution native (pas de réduction)
+window._rStep=100;
 window._rOn=false;
 window._rBuf=[];
 window._rTimer=null;
 window._rOverlay=null;
 window._rSrc=null;
-window._rShowRealDot=false;   // false = indicateur INVISIBLE
+window._rShowRealDot=false;
 
 function _rFindChart(){
-var c=[].slice.call(document.querySelectorAll('canvas')).filter(function(x){
-return x.width>300&&x.height>200&&x.offsetWidth>0&&x.offsetHeight>0;
-});
+var c=[].slice.call(document.querySelectorAll('canvas')).filter(function(x){return x.width>300&&x.height>200&&x.offsetWidth>0;});
 c.sort(function(a,b){return(b.width*b.height)-(a.width*a.height);});
 return c[0];
 }
 
 function _rSync(ov,src){
 var r=src.getBoundingClientRect();
-ov.style.left=r.left+'px';
-ov.style.top=r.top+'px';
-ov.style.width=r.width+'px';
-ov.style.height=r.height+'px';
+ov.style.left=r.left+'px';ov.style.top=r.top+'px';
+ov.style.width=r.width+'px';ov.style.height=r.height+'px';
 }
 
 function _rMakeOverlay(src){
 if(window._rOverlay)window._rOverlay.remove();
 var ov=document.createElement('canvas');
-ov.width=src.width;
-ov.height=src.height;
-ov.style.position='fixed';
-ov.style.pointerEvents='none';
-ov.style.margin='0';
-ov.style.padding='0';
-ov.style.border='0';
+ov.width=src.width;ov.height=src.height;
+ov.style.position='fixed';ov.style.pointerEvents='none';
+ov.style.margin='0';ov.style.padding='0';ov.style.border='0';
 ov.style.zIndex='2147483646';
 _rSync(ov,src);
 if(src.nextSibling)src.parentNode.insertBefore(ov,src.nextSibling);
 else src.parentNode.appendChild(ov);
-window._rOverlay=ov;
-return ov;
+window._rOverlay=ov;return ov;
 }
 
-/* Détecte la Y du vrai prix courant (bande de droite uniquement). */
 function _rRealPriceY(live){
 try{
-var ctx=live.getContext('2d',{willReadFrequently:true});
+var ctx=live.getContext('2d',{willReadFrequently:true})||live.getContext('webgl',{preserveDrawingBuffer:true})||live.getContext('experimental-webgl',{preserveDrawingBuffer:true});
 if(!ctx)return -1;
 var w=live.width,h=live.height;
-var x0=Math.max(0,w-8);
-var bw=w-x0;
+var x0=Math.max(0,w-8),bw=w-x0;
 var img=ctx.getImageData(x0,0,bw,h).data;
 var bestY=-1,bestScore=0;
 for(var y=0;y<h;y++){
@@ -119,8 +107,7 @@ var k=(y*bw+x)*4;
 var r=img[k],g=img[k+1],b=img[k+2],a=img[k+3];
 if(a<20)continue;
 var mx=Math.max(r,g,b),mn=Math.min(r,g,b);
-if(mx-mn>30)score+=2;
-else if(mx<60)score+=1;
+if(mx-mn>30)score+=2;else if(mx<60)score+=1;
 }
 if(score>bestScore){bestScore=score;bestY=y;}
 }
@@ -129,87 +116,53 @@ return bestY;
 }
 
 function _rStop(){
-clearInterval(window._rTimer);
-window._rTimer=null;
-window._rOn=false;
+clearInterval(window._rTimer);window._rTimer=null;window._rOn=false;
 if(window._rOverlay){window._rOverlay.remove();window._rOverlay=null;}
 if(window._rSrc){window._rSrc.style.opacity='';window._rSrc.style.visibility='';}
-window._rSrc=null;
-window._rBuf=[];
+window._rSrc=null;window._rBuf=[];
 }
 
 window.r=function(){
 if(window._rOn){_rStop();return'retard OFF';}
 var src=_rFindChart();
-if(!src)return'canvas du graphique introuvable';
+if(!src)return'canvas du graphique introuvable. Attends que le graphique charge.';
 var overlay=_rMakeOverlay(src);
 var octx=overlay.getContext('2d');
-window._rOn=true;
-window._rSrc=src;
-src.style.opacity='0';
+window._rOn=true;window._rSrc=src;src.style.opacity='0';
 
 window._rTimer=setInterval(function(){
 try{
 if(!window._rOn)return;
 var live=window._rSrc;
-if(!live||!live.isConnected){
-live=_rFindChart();
-if(!live)return;
-window._rSrc=live;
-live.style.opacity='0';
-}
-if(live.width!==overlay.width||live.height!==overlay.height){
-overlay.width=live.width;
-overlay.height=live.height;
-}
+if(!live||!live.isConnected){live=_rFindChart();if(!live)return;window._rSrc=live;live.style.opacity='0';}
+if(live.width!==overlay.width||live.height!==overlay.height){overlay.width=live.width;overlay.height=live.height;}
 _rSync(overlay,live);
 
-var sc=window._rScale>0?Math.min(1,window._rScale/live.width):1;
-var fw=Math.max(1,Math.round(live.width*sc));
-var fh=Math.max(1,Math.round(live.height*sc));
 var frame=document.createElement('canvas');
-frame.width=fw;frame.height=fh;
-frame.getContext('2d').drawImage(live,0,0,fw,fh);
+frame.width=live.width;frame.height=live.height;
+var fctx=frame.getContext('2d');
+fctx.drawImage(live,0,0);
 
 window._rBuf.push({t:Date.now(),frame:frame});
-while(window._rBuf.length&&Date.now()-window._rBuf[0].t>window._rDelay+1500){
-window._rBuf.shift();
-}
+while(window._rBuf.length&&Date.now()-window._rBuf[0].t>window._rDelay+1500){window._rBuf.shift();}
 
 var delayed=null;
-for(var i=0;i<window._rBuf.length;i++){
-if(Date.now()-window._rBuf[i].t>=window._rDelay)delayed=window._rBuf[i].frame;
-}
+for(var i=0;i<window._rBuf.length;i++){if(Date.now()-window._rBuf[i].t>=window._rDelay)delayed=window._rBuf[i].frame;}
 
 octx.clearRect(0,0,overlay.width,overlay.height);
-if(delayed)octx.drawImage(delayed,0,0,overlay.width,overlay.height);
+if(delayed)octx.drawImage(delayed,0,0);
 else octx.drawImage(live,0,0);
 
 if(window._rShowRealDot){
 var realY=_rRealPriceY(live);
-if(realY>=0){
-octx.beginPath();
-octx.arc(overlay.width-6,realY,2,0,Math.PI*2);
-octx.fillStyle='rgba(128,128,128,0.06)';
-octx.fill();
-}
+if(realY>=0){octx.beginPath();octx.arc(overlay.width-6,realY,2,0,Math.PI*2);octx.fillStyle='rgba(128,128,128,0.06)';octx.fill();}
 }
 }catch(x){}
 },window._rStep);
-
-return'retard ON : '+(window._rDelay/1000)+'s (canvas '+src.width+'x'+src.height+')';
+return'retard ON : 6s';
 };
-
-window.rDelay=function(s){
-window._rDelay=Math.max(0,Number(s)*1000);
-return'retard = '+(window._rDelay/1000)+'s';
-};
-
-/* Affiche/cache l'indicateur du vrai prix (invisible par défaut). */
-window.rDot=function(v){
-window._rShowRealDot=!!v;
-return'indicateur vrai prix : '+(window._rShowRealDot?'visible (discret)':'invisible');
-};
+window.rDelay=function(s){window._rDelay=Math.max(0,Number(s)*1000);return'retard = '+(window._rDelay/1000)+'s';};
+window.rDot=function(v){window._rShowRealDot=!!v;return'indicateur vrai prix : '+(window._rShowRealDot?'visible':'invisible');};
 /* ===== FIN MODE RETARD ===== */
 });
 })();
