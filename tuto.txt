@@ -2,11 +2,12 @@
  TUTO : HÉBERGER ET UTILISER LE SCRIPT ER (mobile + PC)
 =====================================================================
 
-Ce que fait le script (fichier er11.js)
+Ce que fait le script (fichier er14.js)
 --------------------------------------
 - Affiche Eruda (outil d'inspection) et permet de modifier le texte de la page.
-- Masque les textes du type "vrais profits", "argent réel", etc., ainsi que l'encadré
+- Masque les textes du type "vrais profits", "argent réel", "Real profit", etc., ainsi que l'encadré
   "Cette section n'est disponible que pour les comptes réels" (Trading Social), partout où il apparaît.
+- Bouton Classic mode : forcé visible aussi sur PC / MacBook (Chrome).
 - Barre du bas : répartit les boutons (Transactions, Signaux, Classic mode...). [mobile, mode portrait]
   En mode paysage, le menu est vertical à droite : le script le laisse tel que Pocket Option l'affiche
   (il rétablit l'affichage d'origine quand tu tournes le téléphone) et s'assure seulement que
@@ -29,10 +30,10 @@ navigateur contient seulement une petite ligne qui le charge.
 1) Va sur github.com et connecte-toi.
 2) Ouvre ton dépôt : princegnivo / er.js   (il doit être en "Public").
 3) Touche/clique "Add file" puis "Upload files".
-4) Choisis le fichier er11.js, puis "Commit changes".
+4) Choisis le fichier er14.js, puis "Commit changes".
    (Garde les anciens fichiers, ils ne gênent pas.)
 5) L'adresse du fichier est alors :
-   https://cdn.jsdelivr.net/gh/princegnivo/er.js@main/er11.js
+   https://cdn.jsdelivr.net/gh/princegnivo/er.js@main/er14.js
 
 Vérification : ouvre cette adresse dans le navigateur. Tu dois voir du code
 qui commence par  (function(){if(window._er3)
@@ -45,7 +46,7 @@ S'il commence par "javascript:", ce n'est pas le bon fichier.
 ---------------------------------------------------------------------
 Copie-colle ce code en UNE SEULE LIGNE :
 
-javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/princegnivo/er.js@main/er11.js?v='+Date.now();document.body.appendChild(s)})();
+javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/princegnivo/er.js@main/er14.js?v='+Date.now();document.body.appendChild(s)})();
 
 Le "?v=" + Date.now() force le téléchargement d'une version fraîche à chaque
 fois, donc ton navigateur ne garde pas d'ancienne copie.
@@ -103,10 +104,11 @@ Commandes à taper dans la console d'Eruda :
   _erClear()    efface les modifications de texte enregistrées
   _avInfo       indique l'élément détecté comme avatar (utile pour dépanner)
   _tbInfo       indique combien de barres du haut ont été trouvées
+  _cmInfo       indique l'état du bouton Classic mode (utile sur PC)
 
 
 ---------------------------------------------------------------------
- 6. RÉGLAGES (à changer dans le fichier er11.js sur GitHub)
+ 6. RÉGLAGES (à changer dans le fichier er14.js sur GitHub)
 ---------------------------------------------------------------------
   var PH=50;          hauteur du bouton Classic mode de la barre du bas
   var TBMODE='hide';  barre du haut : 'hide' = masquée pour de bon (X compris),
@@ -116,7 +118,7 @@ Commandes à taper dans la console d'Eruda :
   stroke-width="3.2"  épaisseur de l'anneau (dans la partie av())
   .84                 réduction de la photo (plus petit = plus d'espace sombre)
 
-Pour modifier : sur GitHub, ouvre er11.js, touche l'icône crayon, change la
+Pour modifier : sur GitHub, ouvre er14.js, touche l'icône crayon, change la
 valeur, puis "Commit changes". Puis voir la section 7 pour le cache.
 
 
@@ -126,11 +128,11 @@ valeur, puis "Commit changes". Puis voir la section 7 pour le cache.
 jsDelivr garde chaque fichier en cache jusqu'à 12 heures. Deux méthodes :
 
 Méthode A (la plus simple) : envoie la nouvelle version sous un NOUVEAU nom
-(er12.js, er13.js...) et change le nom dans le favori ER. Aucun cache possible.
+(er15.js, er16.js...) et change le nom dans le favori ER. Aucun cache possible.
 
-Méthode B : remplace le fichier er11.js sur GitHub (même nom), puis ouvre :
-  https://purge.jsdelivr.net/gh/princegnivo/er.js@main/er11.js
-Tu dois voir "status": "finished" et le chemin qui se termine par er11.js.
+Méthode B : remplace le fichier er14.js sur GitHub (même nom), puis ouvre :
+  https://purge.jsdelivr.net/gh/princegnivo/er.js@main/er14.js
+Tu dois voir "status": "finished" et le chemin qui se termine par er14.js.
 (Si ton navigateur propose de télécharger un fichier, ignore-le.)
 Vérifie bien que l'adresse se termine par le BON nom de fichier.
 
@@ -143,7 +145,7 @@ Ensuite, recharge Pocket Option avant de retoucher ER.
 Rien ne s'affiche (pas d'Eruda) :
   - L'adresse du favori doit commencer par javascript:
   - Pour tester, mets ce code dans un favori DIAG1 :
-    javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/princegnivo/er.js@main/er11.js?v='+Date.now();s.onload=function(){alert('charge')};s.onerror=function(){alert('erreur de chargement')};document.body.appendChild(s)})();
+    javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/princegnivo/er.js@main/er14.js?v='+Date.now();s.onload=function(){alert('charge')};s.onerror=function(){alert('erreur de chargement')};document.body.appendChild(s)})();
     "erreur de chargement" = le fichier n'est pas accessible (voir section 1).
 
 Eruda s'affiche mais l'anneau doré ne change pas :
@@ -169,13 +171,14 @@ La barre du haut (arrondie, vide, avec le X) reste visible :
 
 Des icônes ont disparu (avatar, cadeau, portefeuille...) :
   - Recharge simplement la page : le script n'est pas permanent, tout revient.
-  - Utilise la dernière version du fichier (er11.js ou plus récent) et envoie une capture.
+  - Utilise la dernière version du fichier (er14.js ou plus récent) et envoie une capture.
 
 Ça marchait puis ça ne marche plus :
   - Pocket Option a peut-être changé son affichage. Envoie une capture.
 
 Sur PC, la barre du bas ne change rien :
   - Normal : cette barre n'existe pas dans la version PC du site.
+  - Le bouton Classic mode est lui forcé visible sur PC. Si tu ne le vois pas, tape _cmInfo dans la console d'Eruda et envoie le texte.
 
 
 ---------------------------------------------------------------------
@@ -199,7 +202,7 @@ Un favori ne se lance que quand on le touche, et il est perdu à chaque
 rechargement de la page. Pour que le script se lance tout seul à chaque
 chargement de Pocket Option, il faut une extension de navigateur qui
 exécute un "userscript". Fichier fourni : er.user.js (petit chargeur qui
-va chercher er11.js sur GitHub avec l'option ?auto=1).
+va chercher er14.js sur GitHub avec l'option ?auto=1).
 
 En mode automatique : le script s'applique seul (anneau, barre masquée,
 textes masqués...), mais Eruda reste caché au départ. Pour l'ouvrir,
@@ -239,8 +242,8 @@ un site miroir), ajoute une ligne "// @match" avec cette adresse dans
 l'en-tête du fichier er.user.js.
 
 Mettre à jour en mode automatique :
- - Le chargeur pointe vers er11.js. Pour une nouvelle version, envoie-la
-   sur GitHub sous un nouveau nom (er12.js) puis change le nom dans la
+ - Le chargeur pointe vers er14.js. Pour une nouvelle version, envoie-la
+   sur GitHub sous un nouveau nom (er15.js) puis change le nom dans la
    ligne "s.src = ..." de er.user.js (une seule ligne à modifier).
  - Ou garde le même nom et rafraîchis le cache (section 7, méthode B).
 
